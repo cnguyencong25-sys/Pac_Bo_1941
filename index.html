@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>PÁC BÓ 1941 – BẢO VỆ CĂN CỨ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&family=Black+Ops+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Màn hình chặn xoay dọc (Mobile) -->
+  <div id="orientationLock">
+    <div class="lock-icon">📱</div>
+    <h2>VUI LÒNG XOAY NGANG</h2>
+    <p>Xoay ngang điện thoại để có trải nghiệm chơi game tốt nhất!</p>
+  </div>
+
+  <div id="app">
+    <div id="gameWrap">
+      <!-- Bảng Map Editor -->
+      <div id="editorPanel">
+        <div id="editorHeader">
+          <h3>🛠 BẢN ĐỒ EDITOR</h3>
+          <span>(Bấm M để đóng)</span>
+        </div>
+        <div class="editorBody">
+          <p>Kéo thả các chấm đỏ và vòng vàng để khớp với bản đồ.</p>
+          <textarea id="editorCode" readonly></textarea>
+          <button id="btnCopyCode">Copy Code</button>
+        </div>
+      </div>
+      
+      <canvas id="game"></canvas>
+
+      <!-- HUD -->
+      <div id="hud">
+        <div id="hudTop">
+          <div class="hudStats">
+            <span class="hudPill"><span class="ic">💰</span><span id="foodTxt">150</span></span>
+            <span class="hudPill"><span class="ic">⏱️</span><span id="timeTxt">00:00</span></span>
+            <span class="hudPill"><span class="ic">⭐</span><span id="waveTxt">0/10</span></span>
+          </div>
+          <span id="hudRight">
+            <button class="hudBtn" id="btnPause" title="Tạm dừng (Space)">⏸</button>
+            <button class="hudBtn" id="btnSpeed" title="Tốc độ">x1</button>
+            <button class="hudBtn on" id="btnSfx" title="Âm thanh">🔊</button>
+            <button class="hudBtn on" id="btnMusic" title="Nhạc">🎵</button>
+          </span>
+        </div>
+        
+        <div id="safetyBarWrap">
+          <div id="safetyBar"><div id="safetyFill"></div></div>
+          <div id="safetyTxt">Độ an toàn căn cứ: 20/20</div>
+        </div>
+
+        <div id="waveBanner"></div>
+        
+        <div id="bossBarWrap">
+          <div id="bossName">XE TĂNG</div>
+          <div id="bossBar"><div id="bossFill"></div></div>
+        </div>
+        
+        <div id="prepInfo">
+          <div id="prepCard"></div>
+        </div>
+        
+        <div id="toast"></div>
+        <div id="redFlash"></div>
+        
+        <div id="placeHint">Chạm vào ô đặt quân trên bản đồ</div>
+        <div id="towerActionPanel"></div>
+        
+        <div id="countdownText">5</div>
+      </div>
+      
+      <!-- Tooltip (Đặt ngoài HUD để không bị đè) -->
+      <div id="tooltip"></div>
+      
+      <!-- THANH CHỌN QUÂN VUÔNG -->
+      <div id="towerBar"></div>
+      
+      <!-- Bảng thông số khi hover vào tướng -->
+      <div id="towerStatsPanel">
+        <div class="ts-title" id="tsName">Tên Tướng</div>
+        <div class="ts-row"><span class="ts-icon">⚔️</span> <span>Tấn công:</span> <span class="ts-val" id="tsDmg">0</span></div>
+        <div class="ts-row"><span class="ts-icon">🎯</span> <span>Tầm bắn:</span> <span class="ts-val" id="tsRange">0</span></div>
+        <div class="ts-row"><span class="ts-icon">⚡</span> <span>Tốc độ:</span> <span class="ts-val" id="tsSpeed">0</span>s</div>
+        <div class="ts-desc" id="tsDesc"></div>
+      </div>
+
+      <!-- Menu chính -->
+      <div class="overlay" id="menuOverlay">
+        <div class="panel menu-panel">
+          <div class="starRow">★ ★ ★</div>
+          <h1 class="titleBig">PÁC BÓ 1941</h1>
+          <div class="subTitle">BẢO VỆ CĂN CỨ</div>
+          <p style="text-align:center;font-weight:600;color:#5a2b12;font-size:15px;line-height:1.6;margin:20px 0;">
+            Năm 1941, tại Pác Bó (Cao Bằng), căn cứ cách mạng bên hang Cốc Bó, suối Lê-nin và núi Các Mác. Hãy chỉ huy chiến sĩ, du kích và dân quân phòng thủ đường mòn dẫn vào căn cứ!
+          </p>
+          <div class="btnRow">
+            <button class="btn btn-start" id="btnOpenModes">▶ BẮT ĐẦU</button>
+          </div>
+          <div class="btnRow" style="margin-top:20px; display:flex; justify-content:center; gap:10px;">
+            <button class="btn alt small" id="btnGuide">📖 HƯỚNG DẪN</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Menu chọn chế độ -->
+      <div class="overlay hidden" id="modeOverlay">
+        <div class="panel mode-panel">
+          <h2 style="margin-bottom:20px;">CHỌN CHẾ ĐỘ CHIẾN DỊCH</h2>
+          
+          <div class="mode-grid">
+            <!-- Chế độ Dễ -->
+            <div class="mode-card easy" id="cardEasy">
+              <button class="btn mode-btn">🌱 CHẾ ĐỘ DỄ</button>
+              <div class="mode-img-placeholder">
+                <img src="Chế độ/Dễ.png" alt="Chế độ Dễ">
+              </div>
+            </div>
+
+            <!-- Chế độ Khó -->
+            <div class="mode-card hard" id="cardHard">
+              <button class="btn mode-btn">🔥 CHẾ ĐỘ KHÓ</button>
+              <div class="mode-img-placeholder">
+                <img src="Chế độ/Khó.png" alt="Chế độ Khó">
+              </div>
+            </div>
+
+            <!-- Chế độ Bất Khả Thi -->
+            <div class="mode-card endless" id="cardEndless">
+              <button class="btn mode-btn">💀 BẤT KHẢ THI</button>
+              <div class="mode-img-placeholder">
+                <img src="Chế độ/Bất khả thi.png" alt="Chế độ Bất Khả Thi">
+              </div>
+            </div>
+          </div>
+
+          <div class="btnRow" style="margin-top:20px;">
+            <button class="btn alt small" id="btnBackToMenu">↩ QUAY LẠI MENU</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hướng dẫn -->
+      <div class="overlay hidden" id="guideOverlay">
+        <div class="panel">
+          <h2>HƯỚNG DẪN CHƠI</h2>
+          <ul>
+            <li><b>1.</b> Chạm vào <b>ô vuông dưới đáy màn hình</b> để chọn loại quân (đủ tiền mới chọn được).</li>
+            <li><b>2.</b> Sau khi chọn, chạm vào <b>ô đặt quân</b> (bụi cây/chiến hào) hai bên đường để đặt.</li>
+            <li><b>3.</b> Chạm vào quân đã đặt để <b>Nâng cấp (tối đa 3)</b> hoặc <b>Bán (hoàn 60%)</b>.</li>
+            <li><b>4.</b> Bẫy chông tre đặt <b>trực tiếp trên đường</b> (tối đa 4 điểm).</li>
+            <li><b>5.</b> Giữ <b>Độ an toàn căn cứ ⭐</b> trên 0 (ở chế độ Dễ / Bất Khả Thi).</li>
+            <li><b>Phím tắt:</b> 1–6 chọn quân, U nâng cấp, S bán, Space tạm dừng, Esc hủy chọn.</li>
+          </ul>
+          <div class="legendGrid">
+            <div class="legendItem"><b>🔫 Chiến sĩ Việt Minh</b> — 50💰, cân bằng, rẻ.</div>
+            <div class="legendItem"><b>💣 Du kích lựu đạn</b> — 80💰, nổ lan, mạnh với cụm địch.</div>
+            <div class="legendItem"><b>🎯 Xạ thủ bắn tỉa</b> — 120💰, tầm xa, x1.5 lên xe tăng.</div>
+            <div class="legendItem"><b>🌀 Xạ thủ súng máy</b> — 200💰, bắn nhanh, dễ quá nhiệt.</div>
+            <div class="legendItem"><b>🚩 Nữ giao liên</b> — 70💰, tăng tốc bắn, giảm choáng.</div>
+            <div class="legendItem"><b>🎋 Bẫy chông tre</b> — 40💰, đặt trên đường, 3 lượt.</div>
+          </div>
+          <div class="btnRow"><button class="btn" id="btnGuideClose">ĐÃ HIỂU</button></div>
+        </div>
+      </div>
+
+      <!-- Tạm dừng -->
+      <div class="overlay hidden" id="pauseOverlay">
+        <div class="panel">
+          <h2>TẠM DỪNG</h2>
+          <div class="btnRow">
+            <button class="btn" id="btnResume">▶ TIẾP TỤC</button>
+            <button class="btn alt" id="btnRestartPause">↻ CHƠI LẠI</button>
+            <button class="btn alt" id="btnMenuPause">⌂ MENU</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Kết thúc -->
+      <div class="overlay hidden" id="endOverlay">
+        <div class="panel">
+          <h2 id="endTitle">KẾT THÚC</h2>
+          <div class="winStars" id="endStars"></div>
+          <div class="statRow"><span>Số địch hạ:</span><span id="endKills">0</span></div>
+          <div class="statRow"><span>Đợt đạt được:</span><span id="endWave">0/10</span></div>
+          <div class="statRow"><span>Thời gian:</span><span id="endTime">00:00</span></div>
+          <div class="statRow"><span>Kỷ lục:</span><span id="endBest">--:--</span></div>
+          <div class="btnRow">
+            <button class="btn" id="btnReplay">↻ CHƠI LẠI</button>
+            <button class="btn alt" id="btnMenuEnd">⌂ MENU</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bảng Admin -->
+  <div id="adminPanel" style="display:none; position:absolute; background:rgba(20,15,10,0.95); border:2px solid #c8102e; border-radius:10px; z-index:9999; width:280px; color:#fff; font-family:'Be Vietnam Pro', sans-serif; box-shadow:0 10px 30px rgba(0,0,0,0.8);">
+    <div id="adminHeader" style="background:#2b1d0e; padding:10px; border-radius:8px 8px 0 0; cursor:move; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #c8102e;">
+      <h3 style="margin:0; color:#ffd75e; font-size:14px; pointer-events:none;">🛠 ADMIN PANEL</h3>
+      <span style="font-size:11px; color:#aaa; pointer-events:none;">Phím M để đóng</span>
+    </div>
+    <div style="padding:15px; display:flex; flex-direction:column; gap:12px; font-size:13px;">
+      <div>
+        <b style="color:#ffd75e;">1. Tiền (Vàng):</b>
+        <div style="display:flex; gap:5px; margin-top:5px;">
+          <button id="btnAddFood" style="flex:1; padding:5px; background:#c8102e; color:white; border:none; border-radius:4px; cursor:pointer; font-weight:bold;">+ 1000</button>
+          <input type="number" id="inputFood" value="9999" style="width:60px; padding:5px; border-radius:4px; border:none; text-align:center; color:#000; font-weight:bold;">
+          <button id="btnSetFood" style="padding:5px 10px; background:#b8860b; color:white; border:none; border-radius:4px; cursor:pointer; font-weight:bold;">Set</button>
+        </div>
+      </div>
+      <div>
+        <b style="color:#ffd75e;">2. Thời gian / Map:</b>
+        <div style="display:flex; gap:5px; margin-top:5px;">
+          <button id="btnTimeDay" style="flex:1; padding:5px; background:#3a5524; color:white; border:none; border-radius:4px; cursor:pointer; font-weight:bold;">Sáng</button>
+          <button id="btnTimeDusk" style="flex:1; padding:5px; background:#8a5a2b; color:white; border:none; border-radius:4px; cursor:pointer; font-weight:bold;">Chiều</button>
+          <button id="btnTimeNight" style="flex:1; padding:5px; background:#1a2035; color:white; border:none; border-radius:4px; cursor:pointer; font-weight:bold;">Tối</button>
+        </div>
+      </div>
+      <div>
+        <b style="color:#ffd75e;">3. Chuyển Đợt (Wave):</b>
+        <div style="display:flex; gap:5px; margin-top:5px;">
+          <button id="btnNextWave" style="flex:1; padding:5px; background:#4a6b3a; color:white; border:none; border-radius:4px; cursor:pointer; font-weight:bold;">Đợt tiếp</button>
+          <input type="number" id="inputWave" value="1" min="1" style="width:40px; padding:5px; border-radius:4px; border:none; text-align:center; color:#000; font-weight:bold;">
+          <button id="btnSetWave" style="padding:5px 10px; background:#b8860b; color:white; border:none; border-radius:4px; cursor:pointer; font-weight:bold;">Nhảy</button>
+        </div>
+      </div>
+      <hr style="border-color:#444; margin:5px 0;">
+      <button id="btnWinGame" style="padding:10px; background:linear-gradient(180deg,#ffd75e,#d4a017); color:#2b1d0e; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:14px;">🏆 Kết Thúc (Win)</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
