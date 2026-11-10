@@ -368,3 +368,68 @@ h1.titleBig{ font-size:clamp(24px, 6vw, 42px); margin:2px 0 2px; }
   .tCard .tName { font-size: 7px; }
   #towerStatsPanel { bottom: 55px; width: 140px; }
 }
+/* ================== FIX MENU TO TRÊN ĐIỆN THOẠI ================== */
+@media (max-height: 550px) and (orientation: landscape) {
+  /* Thu nhỏ khung chứa Menu */
+  .panel {
+    width: min(90vw, 600px) !important;
+    padding: 12px 20px !important;
+    max-height: 92vh !important;
+  }
+
+  /* Thu nhỏ chữ tiêu đề */
+  .titleBig {
+    font-size: 26px !important;
+    margin-bottom: 4px !important;
+  }
+  .subTitle {
+    font-size: 13px !important;
+    margin-bottom: 8px !important;
+  }
+  .panel h2 {
+    font-size: 18px !important;
+    margin-bottom: 8px !important;
+  }
+
+  /* Thu nhỏ đoạn văn mô tả lịch sử */
+  .menu-panel p {
+    font-size: 11px !important;
+    line-height: 1.4 !important;
+    margin: 8px 0 !important;
+  }
+
+  /* Thu nhỏ nút Bắt đầu */
+  .btn-start {
+    font-size: 16px !important;
+    padding: 8px 30px !important;
+    min-height: 40px !important;
+  }
+  
+  /* Thu nhỏ các nút phụ (Hướng dẫn) */
+  .btn.alt.small {
+    font-size: 11px !important;
+    padding: 4px 10px !important;
+    min-height: 30px !important;
+  }
+
+  /* Fix riêng cho menu 3 chế độ (nếu bị tràn) */
+  .mode-grid {
+    gap: 6px !important;
+    margin-top: 10px !important;
+  }
+  .mode-card {
+    padding: 8px !important;
+  }
+  .mode-btn {
+    font-size: 12px !important;
+    min-height: 36px !important;
+    padding: 4px 6px !important;
+    margin-bottom: 6px !important;
+  }
+  .mode-img-placeholder {
+    max-height: 120px !important; /* Giới hạn chiều cao ảnh để không tràn */
+  }
+  .btnRow {
+    margin-top: 6px !important;
+  }
+}
